@@ -28,6 +28,7 @@ Idea可以在Settings | Preferences |Editor |Live中修改或者增加快捷代�
 |Alt + 7|Structure Window|
 |Alt + 9|Version Control|
 |Crtl + Alt + Shift + S|Project Structure|
+|Alt + F12|终端|
 
 Editor Actions
 
@@ -81,6 +82,7 @@ Editor Actions
 Main menu 
 
 |快捷键|描述|
+|:--|:--|
 |Alt + P|新加属性(自定义)|
 |Alt + =|新建java(自定义)|
 |Alt + F|新建File(自定义)|
@@ -136,3 +138,110 @@ Main menu
 |Ctrl + Shift + T|测试|
 |Ctrl + Alt + Home|相关符号|
 |Ctrl + Alt + T|系统的新建终端|
+|Ctrl + F12|文件结构，属性方法列表|
+|Ctrl + Alt + Shift + 2|文件路径，选择要在文件管理器中现实的路径|
+|Ctrl + H|类继承关系|
+|Ctrl + Shift + H|方法继承关系|
+|Ctrl + Alt + H|方法调用关系|
+|F2|下一个高亮错误|
+|Shift + F2|上一个高亮错误|
+|Alt + Shift + [|   |
+|Alt + Shift + ]|   |
+|Ctrl + Alt + up|冲突，Ubuntu下转换桌面|
+|Ctrl + Alt + down|冲突，Ubuntu下转换桌面|
+|Ctrl + Alt + left|冲突，Ubuntu下转换桌面|
+|Ctrl + Alt + right|冲突，Ubuntu下转换桌面|
+|Ctrl + Shift + Alt + up|冲突，Ubuntu下转换桌面|
+|Ctrl + Shift + Alt + down|冲突，Ubuntu下转换桌面|
+|Ctrl + Shift + Alt + left|冲突，Ubuntu下转换桌面|
+|Ctrl + Shift + Alt + right|冲突，Ubuntu下转换桌面|
+|Alt + up|上一个方法|
+|Alt + down|下一个方法|
+
+Code
+
+|快捷键|描述|
+|:--|:--|
+|Ctrl + O|覆盖父类方法|
+|Ctrl + I|实现接口方法|
+|Alt + Insert|插入常用方法|
+|Ctrl + Alt + Delete|冲突，任务管理器|
+|Alt + 句号|代码环绕(自定义)|
+|Alt + 逗号|反代码环绕(自定义)|
+|Alt +/|代码补全提示|
+|Alt + Shift + /|取消代码补全提示|
+|Ctrl + =|将隐藏的代码打开|
+|Ctrl + -|将需要暂时隐藏的代码隐藏|
+|Ctrl + Alt + =|递归将隐藏的代码代开|
+|Ctrl + Alt + -|递归将需要隐藏的代码隐藏|
+|Ctrl + Shift + =|将全部的隐藏代码打开|
+|Ctrl + Shift + -|将全部的代码隐藏(自己的理解，不动了，可以自己试验后理解)|
+|Alt + [|打开doc注释(自定义)|
+|Alt + ]|关闭doc注释(自定义)|
+|Ctrl +句号|扩展／合并选中部分|
+|Ctrl + J|插入模板代码|
+|Ctrl + Alt + J|选中部分模板代码环绕|
+|Ctrl + /|添加／取消行注释|
+|Ctrl + Shift + /|添加取消块注释|
+|Alt + L|格式化代码(自定义)|
+|Ctrl + Alt + Shift + L|显示格式化文件的对话框|
+|Ctrl + Alt + O|优化import|
+|Ctrl + Alt + I|自动缩进行|
+|Ctrl + Shift + Up/Down|上下交换声明的位置|
+|Alt + A|元素左移(自定义)|
+|Alt + D|元素右移(自定义)|
+|Alt + Shift + Up|向上移动整行|
+|Alt + Shift + Down|向下移动整行|
+|Ctrl + Alt + Q|检查代码(自定义)|
+|Ctrl + Alt + W|清理代码(自定义)|
+|Ctrl + Alt + Shift + I|指定检查方面|
+|Ctrl + Alt + Shift + H|配置当前文件分析的高亮模型||
+|Ctrl + Alt + Shift + D|分析依赖关系|
+|Ctrl + Alt + Shift + T|选择重构该文件的选项|
+|Shift + F6|重命名|
+|Ctrl + F6|改变签名|
+|Ctrl + Shift + F6|改变类型|
+|F6|移动...|
+|F5|复制...|
+|Alt + Delete|安全删除|
+|Ctrl + Alt + V|摘取为变量|
+|Ctrl + Alt + C|摘取为常量|
+|Ctrl + Alt + F|摘取为属性域|
+|Ctrl + Alt + P|摘取为参数|
+|Ctrl + Alt + M|摘取为方法|
+|Ctrl + Alt + Shift + P|摘取为功能函数的参数|
+|Ctrl + Alt + A|内敛插入对象|
+|Ctrl + F9|build工程|
+|Ctrl + Shift + F9|rebuild|
+|Shift + F10|Run|
+|Shift + F9|Debug|
+|Alt + Shift + F10|直接设置并运行|
+|Alt + Shift + F9|直接设置并Debug|
+|Alt + Shift + E|编辑配置(自定义)|
+|Ctrl + F12|停止(Stop)|
+|F8|Debug执行完该行|
+|Alt + Shift + F8|Debug强行执行完该行|
+|F7|Debug进入步骤调用的方法|
+|Alt + Shift + F7|Debug强行进入步骤调用的方法|
+|Shift + F7|Debug智能进入步骤调用的方法|
+|Shift + F8|Debug跳出该方法，到调用处的下一行|
+|Alt + F9|运行到光标处|
+|Ctrl + Alt + F9|强行运行到光标处|
+|F9|执行到下一断点|
+|Alt + 分号|评估表达式的值(自定义)|
+|Ctrl + Alt + 分号|快速评估表达式的值(自定义)|
+|Ctrl + 逗号|显示执行的位置(自定义)|
+|Ctrl + F8|快速删除加断点|
+|Ctrl + Alt + Shift + F8|快速增加临时断点|
+|Ctr + Shift + F8|查看断点|
+|Alt + Shift + T|转换任务|
+|Alt + Shift + N|打开任务|
+|Alt + Shift + W|关闭活动任务|
+|Alt + Shift + B|在浏览器中打开|
+|Alt + S|配置Servers|
+|Shift + F12|关闭除编辑窗口之外的窗口|
+|Ctrl + F4|关闭当前窗口|
+|Alt + Right|下一个标签页|
+|Alt + Left|上一个标签页|
+|Ctrl + Shift + A|查找快捷键|
+|
