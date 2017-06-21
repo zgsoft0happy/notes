@@ -226,7 +226,7 @@ Code
 |Shift + F7|Debug智能进入步骤调用的方法|
 |Shift + F8|Debug跳出该方法，到调用处的下一行|
 |Alt + F9|运行到光标处|
-|Ctrl + Alt + F9|强行运行到光标处|
+|Ctrl + Alt + F9|强行运行到光标处|Ctr
 |F9|执行到下一断点|
 |Alt + 分号|评估表达式的值(自定义)|
 |Ctrl + Alt + 分号|快速评估表达式的值(自定义)|
@@ -244,4 +244,50 @@ Code
 |Alt + Right|下一个标签页|
 |Alt + Left|上一个标签页|
 |Ctrl + Shift + A|查找快捷键|
-|
+|Ctrl + D|显示比较多个文件的不同|
+|Ctrl + Alt + D|用编辑器现实比较多个文件的不同|
+|F7|下一个不同|
+|Shift + F7|上一个不同|
+
+快捷输入
+
+|快捷代码|描述|代码格式|
+|:--|:--|:--|
+|fori|for循环|`for(int $INDEX$ = 0; $INDEX$ < $LIMIT$; $INDEX$++) {$END$}`|
+|itar|for遍历数组|`for(int $INDEX$ = 0; $INDEX$ < $ARRAY$.length; $INDEX$++) {  $ELEMENT_TYPE$ $VAR$ = $ARRAY$[$INDEX$];  $END$}`|
+|itco|for遍历集合|`for($ITER_TYPE$ $ITER$ = $COLLECTION$.iterator(); $ITER$.hasNext(); ) {  $ELEMENT_TYPE$ $VAR$ =$CAST$ $ITER$.next();  $END$}`|
+|iten|while遍历枚举|`while($ENUM$.hasMoreElements()){  $TYPE$ $VAR$ = $CAST$ $ENUM$.nextElement();  $END$}`|
+|iter|for遍历|`for ($ELEMENT_TYPE$ $VAR$ : $ITERABLE_TYPE$) {  $END$}`|
+|itit|while遍历|`while($ITER$.hasNext()){  $TYPE$ $VAR$ = $CAST$ $ITER$.next();  $END$}`|
+|itli|for遍历list|`for (int $INDEX$ = 0; $INDEX$ < $LIST$.size(); $INDEX$++) {  $ELEMENT_TYPE$ $VAR$ = $CAST$ $LIST$.get($INDEX$);  $END$}`|
+|ittok|for遍历|`for (java.util.StringTokenizer $TOKENIZER$ = new java.util.StringTokenizer($STRING$); $TOKENIZER$.hasMoreTokens(); ) {    String $VAR$ = $TOKENIZER_COPY$.nextToken();    $END$}`|
+|itve|for遍历vector|`for(int $INDEX$ = 0; $INDEX$ < $VECTOR$.size(); $INDEX$++) {  $ELEMENT_TYPE$ $VAR$ = $CAST$ $VECTOR$.elementAt($INDEX$);  $END$}`|
+|ritar|for倒叙遍历数组|`for(int $INDEX$ = $ARRAY$.length - 1; $INDEX$ >= 0; $INDEX$--) {  $ELEMENT_TYPE$ $VAR$ = $ARRAY$[$INDEX$];  $END$}`|
+|dep(maven)|dependency依赖|`<dependency>   <groupId>$GROUP$</groupId>   <artifactId>$ARTIFACT$</artifactId>   <version>$VERSION$</version></dependency>`|
+|pl(maven)|plugin插件|`<plugin>   <groupId>$GROUP$</groupId>   <artifactId>$ARTIFACT$</artifactId>   <version>$VERSION$</version></plugin>`|
+|repo(maven)|repository库|`<repository>  <id>$ID$</id>  <name>$NAME$</name>  <url>$URL$</url></repository>`|
+|geti|单例模式的getInstance|`public static $CLASS_NAME$ getInstance() {  return $VALUE$;}`|
+|ifn|if为null|`if ($VAR$ == null) {$END$}`|
+|inn|if not null|`if ($VAR$ != null) {$END$}`|
+|inst|if是子类|`if ($EXPR$ instanceof $TYPE$) {  $TYPE$ $VAR1$ = ($TYPE$)$EXPR$;  $END$}`|
+|lazy|if为null懒加载|`if ($VAR$ == null) {  $VAR$ = new $TYPE$($END$);}`|
+|lst|数组的最后一个元素|`$ARRAY$[$ARRAY$.length - 1]`|
+|mn|选择最小值|`$VAR$ = Math.min($VAR$, $END$);`|
+|mx|选择最大值|`$VAR$ = Math.max($VAR$, $END$);`|
+|psvm|main函数|`public static void main(String[] args){  $END$}`|
+|tc|try……catch代码块|`try{    } catch (Exception e) {    e.printStackTrace();}`|
+|toar|将集合变为数组|`$COLLECTION$.toArray(new $COMPONENT_TYPE$[$COLLECTION$.size()])$END$`|
+|serr|错误输出|`System.err.println("$END$");`|
+|sout|标准输出|`System.out.println($END$);`|
+|souf|格式化输出|`System.out.printf("$END$");`|
+|soutm|输出当前类和方法名|`System.out.println("$CLASS_NAME$.$METHOD_NAME$");`|
+|soutp|输出方法的参数名和值|`System.out.println($FORMAT$);`|
+|soutv|输出一个值|`System.out.println("$EXPR_COPY$ = " + $EXPR$);`|
+|prsf|private static final |private static final |
+|psf|public static final |public static final |
+|psfi|public static final int |public static final int |
+|psfs|public static final String |public static final String |
+|St|String|`String `|
+|thr|抛出新|`throw new `|
+|B|用大括号包围|`{$SELECTION$}`|
+|todo|增加todo注释|
