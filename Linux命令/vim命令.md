@@ -95,6 +95,33 @@ vim 命令
 | `daw` | 删除当前光标所在word,包含空白字符 |
 |`:edit foo.txt` | 编辑另外一个文件 ,简写`:e foo.txt` |
 |`vim one.c two.c three.c` | 打开三个文件，启动之打开第一个文件 |
-| `:next` or `:n` | 上述命令的下一个文件 |
+| `:next` or `:n` | 上述命令的下一个文件 ,可以添加计数器|
 | `:args` | 显示当前正在编辑的文件 |
-| 
+| `:previous` or  `:prev` | 回到上一个文件，可以添加计数器 |
+| `:wprevious` or `:wprev` | 合并保存 |
+| `:last` | 最后一个文件 |
+| `:first` | 第一个文件 |
+| `:args five.c six.c seven.c` | 不用重新启动vim,定义要编辑的三个文件 |
+| `:set autowrite` or `:set aw` | 自动协会文件 |
+| `:set autowriteall` or `:set awa` | 同上，关闭窗口一样保存 |
+| `CTRL + ^` | 两个文件之间相互切换 |
+| `:marks M` | 标记，文件标记M |
+| `vim -R file` | 只读模式打开文件 |
+| `vim -M file` | 强制不可修改文件 |
+| `:sav(eas) move.c` | 更改现有文件的名称为move.c |
+| `:f(ile) move.c` | 更改文件名，但不保存 |
+|`:split` | 分割窗口 |
+| `CTRL + W` | 切换活动窗口 |
+| `:close` | 关闭当前窗口 |
+|`:only` | 关闭当前窗口之外的其他所有窗口 |
+| `:split two.c` | 打开第二个窗口，并编辑two.c文件 |
+| `:new` | 打开第二个窗口，并开始编辑一个空文档 |
+| `:vsplit` or `:vsplit two.c` or `:vnew` | 垂直分割 |
+| `:qall` | 放弃所有窗口的操作并退出 |
+| `:wall` | 保存所有窗口的操作 |
+| `wqall` | 保存所有的窗口的操作并退出 |
+| `vim -o one.txt two.txt thre.txt` | 为每一个文件代开一个窗口 |
+| `vimdiff main.cc main.c` | 比较这两个文件的不同 |
+|`:edit main.c` and `:vertical diffpatch main.c diff` | 比较两个文件的不同 |
+| `:table(dit) thatfile` | 在一个窗口中打开thatfile,该窗口占据整个vim显示区域 |
+| `:tab split/new`| 新建一个拥有一个窗口的页签 |
