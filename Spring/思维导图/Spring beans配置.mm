@@ -64,40 +64,12 @@
 </map_styles>
 </hook>
 <hook NAME="AutomaticEdgeColor" COUNTER="3" RULE="ON_BRANCH_CREATION"/>
-<node TEXT="BeanFactory" POSITION="right" ID="ID_473849523" CREATED="1507650761053" MODIFIED="1507989284238">
+<node TEXT="BeanFactory" POSITION="right" ID="ID_473849523" CREATED="1507650761053" MODIFIED="1508074214044">
 <edge COLOR="#0000ff"/>
-<richcontent TYPE="DETAILS">
-
-<html>
-  <head>
-    
-  </head>
-  <body>
-    <p>
-      &#36825;&#26159;&#22791;&#27880;
-    </p>
-  </body>
-</html>
-
-</richcontent>
 </node>
-<node TEXT="&#x4e0a;&#x4e0b;&#x6587;&#x914d;&#x7f6e;ApplicationContext" POSITION="right" ID="ID_767641079" CREATED="1507650772774" MODIFIED="1507989294819">
+<node TEXT="&#x4e0a;&#x4e0b;&#x6587;&#x914d;&#x7f6e;ApplicationContext" POSITION="right" ID="ID_767641079" CREATED="1507650772774" MODIFIED="1508074218944">
 <icon BUILTIN="bookmark"/>
 <edge COLOR="#00ff00"/>
-<richcontent TYPE="DETAILS">
-
-<html>
-  <head>
-    
-  </head>
-  <body>
-    <p>
-      &#36825;&#20010;&#20063;&#26159;&#22791;&#27880;
-    </p>
-  </body>
-</html>
-
-</richcontent>
 <node TEXT="ClassPathXmlApplicationContext" ID="ID_572082021" CREATED="1507650852723" MODIFIED="1507989260414">
 <icon BUILTIN="full-1"/>
 <richcontent TYPE="DETAILS">
@@ -114,22 +86,8 @@
 </html>
 </richcontent>
 </node>
-<node TEXT="FileSystemXmlApplicationContext" ID="ID_1020399210" CREATED="1507650868673" MODIFIED="1507989301428">
+<node TEXT="FileSystemXmlApplicationContext" ID="ID_1020399210" CREATED="1507650868673" MODIFIED="1508074222674">
 <icon BUILTIN="full-2"/>
-<richcontent TYPE="DETAILS">
-
-<html>
-  <head>
-    
-  </head>
-  <body>
-    <p>
-      &#22791;&#27880;
-    </p>
-  </body>
-</html>
-
-</richcontent>
 </node>
 <node TEXT="AnnotationConfigApplicationContext" ID="ID_956958508" CREATED="1507650791115" MODIFIED="1507650987635">
 <icon BUILTIN="full-3"/>
