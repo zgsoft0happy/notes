@@ -17,3 +17,6 @@
 查看特定项目的配置项只能看单项（也许也可以看全部，暂时不知道）
 	`git config propname`
 例如：`git config user.name`
+
+设置终端中文编码问题  
+问题描述：在Linux终端中使用命令git status时，中文字符被转为了编码，需要设置git后才可以正确显示，设置全局配置：`git config --global core.quotepath false`;
