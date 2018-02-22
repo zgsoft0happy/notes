@@ -19,5 +19,5 @@
 例如：`git config user.name`
 
 ##3.设置终端中文编码问题  
-问题描述：在Linux终端中使用命令git status时，中文字符被转为了编码，需要设置git后才可以正确显示，设置全局配置：`git config --global core.quotepath false`;
+问题描述：在Linux终端中使用命令git status时，中文字符被转为了编码，需要设置git后才可以正确显示，设置全局配置：`git config --global core.quotepath false`;      
 问题描述：在终端中使用命令git log时，中文字符（作者名称）被转为了编码，需要设置git后才可以正确显示，设置全局配置：`git config --global core.pager more`;
