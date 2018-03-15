@@ -114,3 +114,129 @@
   - 纯内存访问
   - 非阻塞I/O
   - 避免线程切换和竞态的产生
+
+---------------
+
+- 字符串
+  - 常用命令
+    - 设置值：`set key value [ex seconds] [px milliseconds] [nx|xx]`
+      - ex:设置秒级过期时间
+      - px:设置毫秒级过期时间
+      - nx:键必须不存在，用于新增
+      - xx:键必须存在，用于更新
+      - 命令:`setex`,类似于`set key value ex seconds`
+      - 命令:`setnx`,类似于`set key value nx`
+    - 获得值`get {key}`
+    - 批量设置值：`mset key value [key value key value ...]`
+    - 批量获得值：`mget key [key key ...]`
+    - 计数：`incr key`
+      - 值不是整数返回错误
+      - 值是整数返回自增后的结果
+      - 值不存在，新增key，对应的value是0,返回自增后的值，即1
+      - 自减：`decr key`
+      - 自增指定数值：`incrby key increment`
+      - 自减指定数值：`decrby key increment`
+    - 字符串追加值：`append key appendvalue`
+    - 字符串长度：`strlen key`(中文字符占用3个字节)
+    - 设置并返回原值：`getset key value`
+    - 设置指定位置的字符：`setrange key offset value`
+    - 获得部分字符串：`getrange key start end`
+  - 内部编码
+    - int：8个字节的长整形
+    - embstr:小于等于39个字符的字符串
+    - raw:唱过39个字符的字符串
+-----------------
+
+- 哈希（map）
+  - 命令
+    - 设置值：`hset key field value`
+      - hsetnx:与hset的关系如同set与setnx
+    - 获取值：`hget key field`
+    - 删除field:`hdel key field`
+    - 计算field的个数：`hlen key`
+    - 批量设置值：`hmset key field value [field value ...]`
+    - 批量获得field的值：`hmget key field [field ...]`
+    - 判断field是否存在：`hexist key field`
+    - 获得所有的fields:`hkeys key`
+    - 获得所有field的对应的值：`hvals key`
+    - 获得所有的filed-value对：`hgetall key`
+    - 自增：`hincrby key field` | `hincrbyfloat key field`
+    - 计算value的字符串长度：`hstrlen key field`
+  - 内部编码
+    - ziplist:当field较少（512为界），且value没有大（64字节为界）的值时
+    - hashtable:数据较多
+
+----------
+
+- 列表（list）
+  - 命令
+    - 右边（尾部）添加数据：`rpush key value [value ...]`
+    - 左边（头部）添加数据：`lpush key value [value ...]`
+    - 在某个元素前/后插入数据：`linsert key before|after pivot value`
+    - 查找指定范围的元素：`lrange key start end`
+    - 获得指定下标的元素：`lindex key index`(index为负值时，从右开始数)
+    - 获得列表的长度：`llen key`
+    - 从左边（头部）弹出一个元素：`lpop key`
+    - 从右边（尾部）弹出一个元素：`rpop key`
+    - 删除指定元素：`lrem key count value`
+      - 找到等于value的元素开始删除
+      - count > 0 从左往右删除最多count个元素
+      - count < 0 从右往左删除最多count个元素
+      - count = 0 删除全部
+    - 删除指定范围的元素：`ltrim key start end`
+    - 修改指定索引的值：`lset key index newValue`
+    - 阻塞pop:`brpop|blpop key [key ...] tomeout`
+      - 阻塞时间，为0时一直阻塞下去
+  - 内部编码
+    - ziplist:列表元素个数（list-max-ziplist-entries默认512），或者单个value超过（max-ziplist-value默认64个字节）
+    - linkedlist:(链表)
+    - quicklist:(3.2版本后新增)
+
+-------------
+
+- 集合
+  - 命令
+    - 添加元素：`sadd key element [element ...]`
+    - 删除元素：`sdel key element [element ...]`
+    - 计算元素的个数：`scard key`
+    - 判断元素是否在集合中：`sismemeber key element`,在返回1,不在返回0
+    - 随即在集合中返回指定个数的元素：`srandmember key [count]`
+      - count默认为1
+    - 从集合中随即弹出：`spop key`
+      - 3.2版本之后支持参数count:`spop key [count]`
+    - 获得所有元素：`smembers key`
+    - 获得多个集合的交集：`sinter key [key2 ...]`
+    - 获得多个集合的并集：`sunion key [key2 ...]`
+    - 获得多个集合的差集：`sdiff key [key2 ...]`
+    - 获得多个集合的交集并保存：`sinterstore destinationkey key [key2 ...]`
+    - 获得多个集合的并集并保存：`sunionstore destinationkey key [key2 ...]`
+    - 获得多个集合的差集并保存：`sdiffstore destinationkey key [key2 ...]`
+  - 内部编码
+    - intset:整数集合，集合数量小于set-max-intset-entries（默认512）
+    - hashtable:哈希表
+
+----------
+
+- 有序集合
+  - 命令
+    - 添加成员：`zadd key score member [score member]`
+      - nx:member必须不存在，用于添加
+      - xx:member必须存在，用于更新
+      - ch:本次操作之后，有序集合和分数发生变化的个数
+      - incr:对score做自增操作，相当于后面的`zincrby`
+      - zadd的时间复杂度是O（log(n)）
+    - 计算成员个数：`zcard key`
+    - 计算成员分数：`zscore key member`
+    - 从低到高计算成员的排名：`zrank key member`
+    - 从高到低计算成员的排名：`zrevrank key member`
+    - 删除成员：`zrem key member [member ...]`
+    - 增加成员分数：`zincrby key increment member`
+    - 正序获得指定范围的元素：`zrange key start end [withscores]`(withscores代表是否和分数一起返回)
+    - 倒序获得指定范围的元素：`zrevrange key start end [withscores]`
+    - 正序获得指定分数范围内的元素：`zrangebyscore key min max [withscores] [limit offset count]`
+    - 倒序获得指定分数范围内的元素：`zrevrangebyscore key max min [withscores] [limit offset count]`
+      - -inf代表无限小
+      - +inf代表无限大
+    - 返回指定分数范围的个数：`zcount key min max`
+    - 删除指定排名内升序元素：`zremrangebyrank key start end`
+    - 删除指定分数范围内的成员：`zremrangebyscore key min max`
