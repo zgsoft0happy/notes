@@ -254,3 +254,99 @@
   - 内部编码
     - ziplist:配置设置的zset-max-ziplist-entries（默认128），配置设置的zset-max-ziplist-value（默认64字节）
     - skiplist(跳跃表):读写效率较低
+
+------------------
+
+- 键管理
+  - 单个键管理
+    - 键重命名：`rename key newkey`
+      - `renamenx key newkey`:只有当newkey不存在时，重命名才能成功
+    - 随即返回一个键：`randomkey`
+    - 键过期
+      - expire key seconds:键在seconds秒后失效过期
+      - expireat key timestamp:键在秒级时间戳timestamp后失效过期
+      - pttl:同ttl，只是单位是毫秒级的
+      - pexpire key milliseconds:键在milliseconds毫秒后失效
+      - pexpireat key milliseconds-timestamp:键在毫秒级的时间戳之后失效
+      - persist key :可以设置取消key的过期时间设置
+      - 注意：对于字符串类型的键，set命令会取消掉过期时间设置
+    - 迁移键
+      - move:`move key db`(不建议生产环境使用)
+      - dump+restore:`dump key` + `restore key ttl value`
+      - migrate:`migrate host port key | "" destination-db timeout [copy] [replace] [keys key ...]`
+        - host:目标Redis的IP地址
+        - port:目标Redis的端口
+        - key|"":在 Redis3.0.6 版本之前, migrate 只支持迁移一个键,所以此处是要迁移的键,但 Redis3.0.6 版本之后支持迁移多个键,如果当前需要迁移多个键,此处为空字符串 ""
+        - destination-db:目标Redis的数据库索引，例如迁入0号数据库，这里就为0
+        - timeout:迁移的超时时间（单位为毫秒）
+        - [copy]:如果添加此项，迁移后不删除源键
+        - [replace]:如果添加此项，不管目标Redis是否存在该键，都能成功迁移覆盖
+        - [keys key [key ...]]:迁移的多个键
+  - 遍历键
+    - 全量遍历：`keys pattern`
+      - pattern
+        - \*:代表任意字符
+        - \.：代表一个字符
+        - []:代表匹配部分字符
+        - \\x:用来做转义
+    - 渐进遍历：`scan cursor [match pattern] [count number]`
+      - cursor:必须参数，游标，第一次遍历是0,每次遍历都会返回当前的游标，知道再次为0表示遍历结束
+      - [match pattern]:可选模式，匹配模式，类似于keys的匹配模式
+      - [count number]:可选参数，每次遍历的个数，默认是10
+    - 集合的遍历：
+      - hgetall:遍历Map
+      - smembers:遍历set
+      - zrange:遍历有序集合
+      - hscan:渐进遍历Map
+      - sscan:渐进遍历set
+      - zscan:渐进遍历有序集合
+  - 数据库管理
+    - 切换数据库：select dbIndex
+    - 清除数据库
+      - 清除当前数据库：`flushdb`
+      - 清除所有数据库：`flushall`
+
+-----------------------------------------
+
+- 慢查询
+  - slowlog-log-slower-than：单位是微秒，默认值是10000
+    - =0:会记录所有的命令
+    - <0:不会有任何记录
+  - slowlog-max-len:最多保存在慢查询的日志的条数
+    - 先进先出规则
+  - 慢查询日志列表：`slowlog command [n]`
+    - 结果有几个属性
+      - 慢查询日志标识ID
+      - 发生的时间戳
+      - 命令耗时
+      - 执行的命令和参数
+      - 新版本好像还有其他信息
+  - 当前记录的慢查询条数：`slowlog len`
+  - 重置慢查询记录：`slowlog reset`
+  - 注意：及时的持久化慢查询记录
+
+--------------
+
+- Redis Shell
+  - redis-cli
+    - -h：主机地址
+    - -p：主机端口
+    - -r:(repeat)命令执行多次, eg,`redis-cli -r 3 ping`
+    - -i:(interval)每个几秒执行一次命令，eg,`redis-cli -r 3 -i 3 ping`
+      - 单位是秒，如果希望是毫秒，则使用小数
+    - -x:代表从标准输入读取数据作为redis-cli的最后一个参数，eg:`echo "world" | redis-cli -x set hello`
+    - -c:链接Redis Cluter节点时需要使用，防止moved和ask异常
+    - -a:如果redis配置了密码，该选项可以不用手动输入auth
+    - --scan或者--parttern:指定扫描的模式，相当于scan命令
+    - --slave:将客户端模拟为slave节点
+    - --rdb:生成RDB持久化实例文件，并保存在本地
+    - --pipe:将命令封装成 Redis 通信协议定义的数据格式,批量发送给 Redis 执行
+    - --bigkeys:使用 scan 命令对 Redis 的键进行采样,从中找到内存占用比较大的键值
+    - --eval:用于执行指定 Lua 脚本
+    - --latency:检测网络延迟
+      - --latency
+      - --latency-history
+      - --latency-dist:该选项会使用统计图表的形式从控制台输出延迟统计信息
+    - --stat:实时获取 Redis 的重要统计信息
+    - --raw:返回格式化后的结果
+    - --no-raw:选项是要求命令的返回结果必须是原始的格式
