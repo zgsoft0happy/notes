@@ -240,3 +240,17 @@
     - 返回指定分数范围的个数：`zcount key min max`
     - 删除指定排名内升序元素：`zremrangebyrank key start end`
     - 删除指定分数范围内的成员：`zremrangebyscore key min max`
+    - 交集：`zinterstore destination numkeys [key ...] [weights weight ...] [aggregate SUM|MIN|MAX]`
+      - destination:并集结果的目标存储集合
+      - numkeys:一共有几个集合参与求并集，与后面key的数量相同
+      - key...:参与计算并集的集合的key
+      - weights:各个对应的key的分数的权重
+      - aggregate:并集中元素分值的确定
+        - SUM:按照各个分值与权重的乘积的和
+        - MIN:按照各个分值与权重的乘积的最小值
+        - MAX:按照各个分值与权重的乘积的最大值
+    - 并集：`zunionstore destination numbeys [key ...] [weights weight ...] [aggregate SUM|MIN|MAX]`
+      - 参数意义参考 `zinterstore`命令
+  - 内部编码
+    - ziplist:配置设置的zset-max-ziplist-entries（默认128），配置设置的zset-max-ziplist-value（默认64字节）
+    - skiplist(跳跃表):读写效率较低
