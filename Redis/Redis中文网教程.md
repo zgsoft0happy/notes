@@ -107,6 +107,7 @@
   - 查看剩余有效时间：`ttl {key}`, 返回非负整数代表生于有效时间的秒数，返回-1代表没有设置过期时间，返回-2代表key不存在。
   - 键的数据结构类型：`type {key}`
   - 查看内部编码：`object encoding {key}`
+  - monitor:监控命令，尽量少用，容易引起阻塞
 
 ----------
 
@@ -350,3 +351,338 @@
     - --stat:实时获取 Redis 的重要统计信息
     - --raw:返回格式化后的结果
     - --no-raw:选项是要求命令的返回结果必须是原始的格式
+  - redis-Server
+    - 主要作用是启动redis服务
+    - --test-memory:用来检测系统是否能够稳定的分配指定内存给Redis,eg:`redis-server --test-memory 1024`
+  - redis-benchmark
+    - -c：客户端的并发数量
+    - -n<request>：客户端的请求总量
+    - -q:只显示每秒处理的请求数量
+    - -r:随机插入一定量的键，eg:`edis-benchmark -c 100 -n 20000 -r 10000`,只对后四位做随机处理
+    - -P:代表每个请求的Pipeline的数量（默认是1）
+    - -k<boolean>:客户端是否使用keepalive,1为使用,0为不使用，默认是1
+    - -t:对指定命令进行基准测试
+    - --csv:结果以csv格式显示
+
+-----------
+
+- Pipeline
+    - 命令的四个过程
+      - 发送命令
+      - 命令排队
+      - 命令执行
+      - 返回结果
+    - 发送命令+返回结果所用的时间就是RTT
+      - 批量的原因就是减少RTT的时间
+    - 原生批量命令和Pipeline模拟批量对比
+      - 原生命令是原子的，Pipeline不是原子的
+      - 原声批量命令是一个命令对应多个key,而Pipeline是对应多个命令
+      - 原生命令是服务器端实现的，Pipeline是服务端和客户端一起实现的
+
+-------------------------
+
+- 事务
+  - 事务
+    - `multi`:事务开始
+    - `exec`:事务结束
+    - `discard`:停止事务
+  - 错误
+    - 命令错误
+    - 运行时错误
+      - redis不支持回滚，开发人员自己修复
+    - watch：确保事务操作中,exec之前没有修改过Key
+  - Redis与Lua
+    - eval和--eval：`eval lua_sh keynum key ...`
+      keynum:key的数量，参数个数
+    - evlsha: 脚本常驻服务器，根据脚本的sha来获得脚本并运行
+      - `redis-cli script load sh_name`:加载脚本并常驻服务器，返回对应sha结果
+      - `evalsha 脚本对应的sha结果`：根据对应的sha结果执行脚本
+  - lua脚本的好处
+    - 原子操作，执行过程不会插入其他命令
+    - 帮助开发和运维人员创建自己的命令，并常驻内存
+  - 脚本管理
+    - `script load`: 将脚本加载到内存
+    - `scrit exists sha ...` : 检查对应的脚本是否存在内存
+    - `script flush`:清楚内存中所有的已经加载的脚本
+    - `script kill`:杀掉正在运行的脚本
+      - lua-time-limit：配置参数，默认是5,达到事件后，其他的请求会受到busy的提示，并提示使用`script kill`杀掉当前进程
+      - 对于写操作的脚本，`script kill`不能杀掉，可以使用`shutdown save`
+
+-------------------
+
+- Bitmaps
+  - 位数据结构
+  - 命令
+    - 设置值：`setbit key offset value`
+    - 获取值：`getbit key offset`
+    - 查询指定范围的为1的位数：`bitcount key [start end]`
+      - start\end:是开始\结束字节，从1开始
+    - 运算：`bitop op destkey key [key ...]`
+      - op的选择
+        - and：交集
+        - or: 并集
+        - not：非
+        - xor:异或
+    - 计算第一个值为targetBit的偏移量：`bitpos key targetBit [start] [end]`
+
+----------------
+
+- HyperLogLog
+  - 一种基数算法
+  - 命令  
+    - 添加：`pfadd key element [element ...]`
+    - 计算独立用户数：`pfcount key [key ...]`
+    - 合并：`pfmerge destkey sourcekey [sourcekey ...]`
+  - 特点
+    - 占用内存小
+    - 计算独立总数，不活的单挑数据
+    - 存在一定的误差
+
+-------------
+
+- 发布订阅
+  - 命令
+    - 发布：`publish channel message`,返回订阅的数量
+    - 订阅：`subscribe channel`
+    - 取消订阅：`unsubscribe channel`
+    - 按照订阅模式订阅：`psubscribe pattern [pattern ...]`
+    - 按照订阅模式取消订阅：`punsubscribe [pattern [pattern ...]]`
+    - 查询活跃频道：`pubsub channels [pattern]`
+    - 查询频道的订阅数：`pubsub numsub channel`
+    - 小哈训模式订阅数：`pubsub numpat`
+
+-----------------
+
+- GEO
+  - 命令
+    - 增加地理位置信息：`geoadd key longitude latitude member [longitude latitude member ...]`
+    - 获得地理位置信息：`geopos key member [member ...]`
+    - 获得两个地理位置之间的距离：`geodist key member1 member2 [unit]`
+      - unit，默认是m
+        - m:米
+        - km:千米
+        - mi:英里
+        - ft:尺
+    - 获得指定范围内的地理位置信息集合：`georadius|georadiusbymember key longitude latitude radius m|km|ft|mi [withcoord] [withdist] [withhash] [COUNT count] [asc|desc] [store key] [storedist key]`
+      - 区别，georadius 需要指定经纬度，georadiusbymember需要指定成员
+      - radius m|km|ft|mi:必须参数，需要带单位
+      - withcoord:返回结果中包含经纬度
+      - withdist:返回结果包含距离中心点的距离
+      - withhash:返回结果中包含geohash
+      - COUNT count:指定返回结果的数量
+      - asc|desc:指定返回结果排序的升序还是降序
+      - store key:将结果的指定地理信息保存在指定的键中
+      - storedist key:将记过中距离中心点的距离保存在指定的键中
+    - 获得geohash: `geohash key member [member ...]`
+    - 删除地理位置信息：`zrem key member`
+
+----------------------
+
+- 客户端通信协议
+  - 在TCP协议之上构建的
+  - RESP协议
+    - 发送命令格式：CRLF代表“\\r\\n”
+    - 结果返回格式
+      - 状态回复：第一个字节是"+"
+      - 错误回复：第一个字节是"-"
+      - 整数回复：第一个字节是":"
+      - 字符串回复：第一个字节是"$"
+      - 多条字符串回复：第一个字节是"\*"
+
+-----------------
+
+- 客户端API      
+  - client list :列出所有的客户端链接信息
+    - id:客户端链接为宜标识，Redis自动自增，重启后从0开始
+    - addr:客户端的ip和端口
+    - fd:socket的文件描述符，fd=-1的时候代表不是外部客户端，是Redis的伪客户端
+    - name:客户端的名字，可以使用`client setName`和`client getName`来设置和获得客户端名称
+    - qbuf:客户端输入缓冲区的总容量，大小不超过1G，超过自动关闭，但是不受max memory的限制
+    - qbuf-free:客户端剩余的输入缓冲区大容量
+    - obl:固定输出缓冲区大小
+      - 输出缓冲区的大小可以使用配置参数client_output_buffer_limit来设置
+      - 配置命令：`client_output_buffer_limit <class> <hard limit> <soft limit> <soft seconds>`
+        - class:客户端类型
+          - normal:普通客户端
+          - slave:slave客户端
+          - pubsub:发布订阅客户端
+        - hard limit:当客户端使用的输出缓冲区的大小超过hard limit后，客户端会立即关闭
+        - soft limit和soft seconds:如果客户端使用的输出缓冲区大小超过soft limit并持续soft seconds秒，客户端会立即关闭
+        - 也不受max memory的限制
+    - oll:动态输出缓冲区大小
+    - omem:使用的字节数
+    - age:最后一次链接的时间
+    - idle:最后一次的空闲时间
+    - flags:客户端的类型
+      - N：Normal
+      - S：Slave节点
+      - O：当前的客户端正在执行monitor命令
+      - M：当前客户端是master节点
+      - x：当前客户端正在执行任务
+      - b：当前客户端正在等待阻塞事件
+      - i：当前客户端正在等待VM I/O,但是此状态已经废弃不用了
+      - d：一个受监视的键已被修改，EXEC命令将失败
+      - u：客户端未被阻塞
+      - c：回复完整输出后，关闭链接
+      - A：尽可能的关闭链接
+    - db:当前客户端使用的数据库索引下标
+    - sub/psub:当前客户端订阅的频道或模式数
+    - multi:当前事务中已执行的命令个数
+    - events:文件描述符事件(r/w):r和w分别代表客户端套接字可读和可写
+    - cmd:当前客户端最后一次执行的命令，不包含参数
+  - info client:客户端的统计信息
+    - client_biggest_input_buf:客户端中最大的输入缓冲区，可以设置10M进行报警
+    - client_longest_output_list:输出缓冲区中最大的对象数
+  - 设置最大的链接数量：`config set maxclients value`
+  - 获得最大的链接数量：`config get maxclients`
+  - 设置链接最大的空闲时间：`config set timeout value`，value为0时表示没有最大空闲时间, 单位是秒
+  - 获得链接最大的空闲时间：`config get timeout`
+  - `client kill ip:port`: 杀掉指定ip指定端口的客户端链接
+  - `client pause millseconds`:阻塞客户端指定事件
+    - 只对普通和订阅发布的客户端有用，对于主从客户端没用
+    - 可以以可控的方式将一个客户端链接从一个Redis节点切换到另外一个Redis节点
+
+------------
+
+- 客户端相关配置
+  - timeout:设置最大空间时间，空闲时间超过这个设置立即关闭链接，如果为0则不检查
+  - maxclients:客户端的最大链接数
+  - tcp-keepalive:检测tcp活性的周期，默认是0,即不检测，建议设置为60即60秒执行一次检测
+  - tcp-backlog:TCP 三次握手后,会将接受的连接放入队列中, tcp-backlog 就是队列的大小,它在 Redis 中的默认值是 511，一般需要系统(linux)的`/proc/sys/net/core/somaxconn`的值大于该设置值
+
+-----------
+
+- 客户端的相关统计
+  - `info client`
+    - connected_clients:当前链接的客户端数量
+    - client_longest_output_list:当前所有输出缓冲区中队列对象个数的最大值
+    - client_biggest_input_buf:前所有输入缓冲区中占用的最大容量
+    - blocked_client:正在执行阻塞命令(例如 blpop 、 brpop 、 brpoplpush )的客户端个数
+  - `info stats`
+    - total_connections_received:Redis自启动以来处理的客户端链接总数
+    - rejected_connections:Redis自启动以来拒绝的客户端链接数，需要重点监控
+
+-------------
+
+- 客户端常见异常
+  - 无法从链接池获得链接
+  - 客户端读写超时
+  - 客户端链接超时
+  - 客户端缓冲区异常
+  - Lua脚本正在执行
+  - Redis正在加载持久化文件
+  - Redis使用的内存超过max memory配置
+  - 客户端链接数过大
+
+----------
+
+- 持久化
+  - RDB
+  - AOF
+
+------------
+
+- RDB
+  - 触发方式
+    - 手动触发
+      - `save`:容易造成阻塞，不建议使用
+      - `bgsave`:fork操作新建子进程完成save的工作，完成后自动结束
+    - 自动触发
+      - save配置：`save m n`:m秒内进行了n次数据修改自动触发bgsave
+      - 从节点从住节点自动复制数据
+      - 执行`debug reload`重新加载redis
+      - 执行shutdown时默认没有设置AOF持久化时自动执行bgsave
+      - `lastsave`:命令，最后一次生成持久化文件的时间
+  - RDB文件保存在dir参数指定的目录下，文件名通过参数dbfilename参数类配置设置的
+    - `config set dir {newdir}`:设置dir对应目录
+    - `config set dbfilename {newdbfilename}`:设置dbfilename对应名字
+    - `config set rdbcompression{yes|no}`：设置是否对持久化文件进行压缩
+
+-----------------
+
+- AOF
+  - append only file
+  - 开启命令：`appendonly yes`,默认是不开启的
+  - 文件名通过配置appendfilename来确定，默认是appendonly.aof，路径也是dir
+  - aof的工作流程操作
+    - 命令写入（append）
+      - 文本协议格式
+    - 文件同步（sync）
+      - 同步策略（`appendfsync`参数控制）
+        - always
+        - everysec
+        - no
+    - 文件重写（rewrite）
+      - 触发方式
+        - 手动触发:直接调用命令`bgrewriteaof`
+        - 自动触发：根据参数自动触发
+          - auto-aof-rewrite-min-size:默认64G
+          - auto-aof-rewrite-percentage:
+    - 重启加载（load）
+  - aof文件校验
+    - `redis-check-aof-fix`:修复损坏的aof文件
+
+------------------------
+
+- 子进程资源开销状态
+  - `info Persistence`
+    - rgb_bgsave_in_progress:bgsave子进程是否正在运行
+    - rgb_current_bgsave_time_sec:当前运行bgsave的时间，-1表示未运行
+    - aof_enabled:是否开启AOF功能
+    - aof_rewrite_in_progress:AOF子进程是否正在进行
+    - aof_rewrite_scheduled:在bgsave结束后是否运行AOF重写
+    - aof_current_rewrite_time_sec:当前运行AOF重写的时间，-1表示未运行
+    - aof_current_size:AOF文件当前的字节数
+    - aof_base_size:AOF上次重写rewrite的字节数
+
+-------------------
+
+- 复制配置
+  - 复制节点
+    - master节点
+    - slave节点
+  - 配置复制（三种方式）
+    - 配置文件加入slave of {masterHost} {masterPort}随Redis启动生效
+    - redis-server启动时，带上参数`--slaveof {masterHost} {masterPort}`
+    - 直接使用命令：`slaveof {masterHost} {masterPort}`生效
+  - 断开连接
+    - 命令：slave节点执行，`slaveof no one`
+    - 流程
+      - 断开与主节点的复制关系
+      - 晋升当前节点为主节点
+  - 安全性
+    - 主节点设置requirepass进行密码验证
+    - 客户端使用auth命令校验
+    - 从节点配置masterauth与主节点密码保持一致
+  - 只读
+    - slave-read-only:只读模式，默认，不建议修改
+  - 传输延迟
+    - 参数repl-disable-tcp-nodelay控制是否开启TCP_NODELAY，默认关闭
+      - 关闭时，主节点无论数据大小都及时被复制到从节点，但增加了网络带宽的消耗，使用网络环境较好的环境
+      - 开启时，主节点会合并较小的tcp数据包从而节省带宽，发送时间间隔取决于linux内核
+  - 拓扑
+    - 一主一从
+    - 一主多从
+    - 树状主从
+
+----------------------
+
+- 复制原理
+  - 复制过程
+    - 保存主节点信息
+    - 建立主从socket链接
+    - 发送ping命令
+    - 权限验证
+    - 同步数据集
+    - 命令持续复制
+  - 数据同步
+    - 全量同步
+    - 部分同步
+      - psync命令：`psync {run_id} {offset}`
+        - run_id:从节点所复制主节点的run_id
+        - offset:当前从节点已复制的数据偏移量
+  - 读写分离
+    - 数据延迟
+    - 读取过期数据
+      - 惰性删除
+      - 定时删除
