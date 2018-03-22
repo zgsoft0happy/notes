@@ -747,4 +747,151 @@
       - lru
         - `object idletime {key}`:不更新lru字段的前提下，获得key没被使用的时间
       - refcount
+        - `object refcount {key}`:获取key的引用次数
       - \*ptr
+    - 缩减键值对象
+    - 共享对象池
+    - 字符串优化
+      - 字符串结构（SDS）
+      - 预分配机制
+      - 字符串重构
+  - 编码优化
+    - 几个编码控制参数（根据参数名称，顾名思义就知道控制的什么）
+      - hash-max-ziplist-value
+      - hash-max-ziplist-entries
+      - list-max-ziplist-value
+      - list-max-ziplist-entries
+      - list-compress-epth
+      - set-max-intset-entries
+      - zset-max-ziplist-value
+      - zset-max-ziplist-entries
+  - 控制键的数量
+
+---------------------
+
+- 哨兵基本概念
+  - 主从复制问题
+    - 主节点故障需要人工干预
+    - 主节点写能力受单机限制
+    - 主节点存储能力受单机限制
+  - 高可用性
+  - Redis Sentinel 高可用性
+    - 故障处理过程
+      - 主节点出现故障
+      - 每个Sentinel节点定期监控，发现主节点主张
+      - 选举一个Sentinel节点作为领导者处理故障转移
+      - 自动化执行故障转移
+    - Redis Sentinel 功能
+      - 监控
+      - 通知
+      - 主节点故障转移
+      - 配置提供者
+    - 多个Sentinel节点
+      - 防止误判
+      - 防止个别Sentinel不可用
+
+-----------
+
+- Sentinel启动
+  - 两种方式
+    - `redis-sentinel redis-sentinel.conf`
+    - `redis-server redis-sentinel.conf --sentinel`
+  - 配置优化
+    - 配置说明和优化
+      - sentinel monitor:`sentinel monitor <master-name> <ip> <port> <quorum>`
+        - master-name:Redis主节点别名
+        - ip:Redis的主节点IP
+        - port:Redis主节点的端口
+        - quorum:断定主节点故障所需要的票数
+      - sentinel down-after-millseconds:`sentinel down-after-millseconds <master-name> <times>`设置节点超时的界限，单位是秒
+      - sentinel parallel-syncs:`sentinel parallel-syncs <master-name> <num>`同时向新的主节点发起复制的从节点数量
+      - sentinel failover-timeout:`sentinel failover-timeout <master-name> <times>`设置故障转移的超时时间
+        - 故障转移步骤
+          - 选出合适的从节点
+          - 晋升选出的从节点为新的主节点
+          - 命令其余的从节点复制新的主节点
+          - 等待老主节点回复后，命令其复制新的主节点
+        - sentinel failover-timeout的作用
+          - 如果 Redis Sentinel 对一个主节点故障转移失败,那么下次再对该主节点做故障转移的起始时间是 failover-timeout 的 2 倍
+          - 在 b )阶段时,如果 Sentinel 节点向 a )阶段选出来的从节点执行 slaveof no one 一直失败(例如该从节点此时出现故障),当此过程超过 failover-timeout 时,则故障转移失败
+          - 在 b )阶段如果执行成功, Sentinel 节点还会执行 info 命令来确认 a )阶段选出来的节点确实晋升为主节点,如果此过程执行时间超过 failover-timeout 时,则故障转移失败
+          - 如果 c )阶段执行时间超过了 failover-timeout (不包含复制时间),则故障转移失败。注意即使超过了这个时间, Sentinel 节点也会最终配置从节点去同步最新的主节点
+      - sentinel auth-pass:`sentinel auth-pass <master-name> <password>`:如果主节点配置了密码，这里设置密码，防止对主节点的监控失败
+      - sentinel notification-script:`sentinel notification-script <master-name> <script-path>`:当一些警告级别的Sentinel时间发生时触发脚本运行
+      - sentinel client-reconfig-script:`sentinel client-reconfig-script <master-name> <script-path>`故障转移结束后执行的脚本
+    - 可以监控多个Redis主节点，通过不同的别名区分
+    - 动态调整配置
+      - sentinel set <param> <value>
+        - param:参数，如quorum等
+        - 只对当前的sentinel节点起作用
+        - 立即刷新配置文件
+        - 建议所有的sentinel节点配置一致
+        - 支持的参数具体参考源码中的 sentinel.c 的 sentinelSetCommand 函数
+    - 部署技巧
+      - sentinel节点不要部署在同一物理机器上
+      - 部署至少三个且奇数个sentinel节点
+      - 一个sentinel节点group监控一个主节点还是多个？
+        - 一个
+          - 维护成本底
+          - Sentinel节点出现问题可能影响多个Redi数据节点，监控的redis过多时sentinel节点产生较多的网络连接
+        - 多个
+          - 和上边正好相反
+          - 彼此隔离
+          - 资源浪费          
+
+---------------
+
+- Sentinel API
+  - sentinel masters:统计所有监控的主节点信息
+  - sentinel master <master-name>:统计监控的指定名字的主节点的信息
+  - sentinel slaves <master-name>:统计监控的指定名字的主节点的从节点信息
+  - sentinel sentinels <master-name>:统计监控的指定名字的主节点的监控节点（不包括当前节点）
+  - sentinel get-master-addr-by-name <master-name>:返回指定节点的ip地址和端口
+  - sentinel reset <pattern>:当前 Sentinel 节点对符合 <pattern> (通配符风格)主节点的配置进行重置,包含清除主节点的相关状态(例如故障转移),重新发现从节点和 Sentinel 节点
+  - sentinel failover <master-name>:强制对指定的主节点进行故障转移
+  - sentinel ckquorum <master-name>:检测当前可达的sentinel节点是否达到quorum个
+  - sentinel flushconfig:强制将当前sentinel节点的配置刷到硬盘
+  - sentinel remove <master-name>:取消当前节点对指定主节点的监控
+  - sentinel monitor <master-name> <ip> <port> <quorum>:配置新增监控主节点
+  - sentinel set <master-name> <param> <value>:设置见动指定主节点的指定配置属性
+  - sentinel is-master-down-by-addr:Sentinel 节点之间用来交换对主节点是否下线的判断,根据参数的不同,还可以作为 Sentinel 领导者选举的通信方式
+    - `sentinel is-master-down-by-addr <ip> <port> <current_epoch> <runid>`
+      - ip:主节点ip地址
+      - port:主节点端口
+      - current_epoch:当前配置纪元
+      - runid:此参数有两种类型,不同类型决定了此 API 作用的不同
+        - 当 runid 等于 “\*” 时,作用是 Sentinel 节点直接交换对主节点下线的判定
+        - 当 runid 等于当前 Sentinel 节点的 runid 时,作用是当前 Sentinel 节点希望目标 Sentinel 节点同意自己成为领导者的请求
+
+-------------------
+
+- 哨兵实现原理
+  - 三个定是监控任务
+    - 每10秒，发送info命令获取最新的主节点和从节点的拓扑结构
+    - 每2秒,每个 Sentinel 节点会向 Redis 数据节点的 __sentinel__ : hello 频道上发送该 Sentinel 节点对于主节点的判断以及当前 Sentinel 节点的信息,同时每个 Sentinel 节点也会订阅该频道
+    - 每隔1秒,每个 Sentinel 节点会向主节点、从节点、其余 Sentinel 节点发送一条 ping 命令做一次心跳检测,来确认这些节点当前是否可达
+  - 主观下线：存在误判
+  - 客观下线
+
+---------------------
+
+- 领导者sentinel节点选举
+  - 算法：Raft
+
+----------------------
+
+- 节点运维
+  - 节点下线
+    - 临时下线
+    - 永久下线
+      - 设置从节点优先级：`config set slave-priority value`
+  - 高可用性读写分离
+    - 从节点的作用
+      - 主节点故障，顶替主节点
+      - 扩展主节点的读能力
+    - redis sentinel读写分离设计思路
+      - 监控事件
+        - `+switch-master`:从节点晋升为主节点，等于减少从节点
+        - `+convert-to-slave`:主节点降级为从节点，等于添加从节点
+        - `+sdown`:主观下线：某个节点可能不可用
+        - `+reboot`:重启了某个节点
