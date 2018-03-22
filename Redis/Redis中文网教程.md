@@ -686,3 +686,65 @@
     - 读取过期数据
       - 惰性删除
       - 定时删除
+
+---------
+
+- 噩梦：阻塞
+  - 原因
+    - 内在原因
+      - API调用不合理
+      - CPU饱和
+      - 持久化阻塞
+        - fork阻塞
+        - AOF刷盘阻塞
+        - HugePage写操作
+    - 外在原因
+      - CPU竞争
+      - 内存交换
+      - 网络问题
+
+------------------
+
+
+- 内存管理
+  - 内存使用统计：`info memory`
+    - used_memory:redis分配的内存总量
+    - used_memory_human:以人类可读的形式返回used_memory
+    - used_memory_rss:从操作系统角度显示Redis占用的物理内存
+    - used_memory_peak:内存使用的最大值，及used_memory的最大峰值
+    - used_memory_peak_human:以人类可读的形式返回used_memory_peak
+    - used_memory_lua:Lua引擎占用的内存
+    - mem_fragmentation_ratio:used_memory_rss/used_memory比值，内存的碎片率
+    - mem_allocator:Redis使用的内存分配器,默认使用的jemalloc
+  - 内存划分
+    - 自身内存
+    - 对象内存
+    - 缓冲内存
+      - 客户端缓冲
+      - 复制挤压缓冲
+      - AOF缓冲
+    - 内存碎片
+  - 内存配置
+    - 设置内存上限：maxmemnory=...
+    - 动态调整内存上限：`config set maxmemory value`
+  - 内存回收策略
+    - 删除过期键对象
+      - 惰性删除
+      - 定是任务删除
+    - 内存溢出控制策略：
+      - 设置命令：`config setmaxmemory-policy {policy}`
+      - maxmemory-policy参数控制
+        - noeviction:默认策略，拒绝写操作
+        - volatile-lru:根据lru算法删除设置了expire属性的键，如果没有可删除的对象，回退到noeviction策略
+        - allkeys-lru:根据lru算法删除键，无论设置没设置expire
+        - allkeys-random:随机删除所有键，直到腾出足够的内存
+        - volatile-random:随机删除过期键，直到腾出足够的内存
+        - volatile-ttl:根据键值对象的的ttl属性，删除最近将要过期的键，如果没有回退到noeviction策略
+  - 内存优化
+    - redisObject
+      - type
+      - encoding
+      - lru
+        - `object idletime {key}`:不更新lru字段的前提下，获得key没被使用的时间
+      - refcount
+      - \*ptr
