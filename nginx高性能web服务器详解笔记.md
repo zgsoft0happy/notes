@@ -1,0 +1,142 @@
+- Ngnix服务器基础配置指令
+  - 默认的配置文件nginx.conf
+    - 每个配置都以分号结尾
+  - ngnix.conf的文件结构
+    - 全局块
+    - events块
+    - http块
+      - http全局块
+      - server块
+        - server全局块
+        - location块
+  - 配置运行Nginx服务器用户（组）
+    - `user user [group]`
+      - user:指定可以运行Nginx服务器的用户
+      - group:可选项，指定可以运行Nginx服务器的用户组
+      - 所有用户都可运行
+        - 注释掉user配置行
+        - 配置：`user nobody nobody`
+    - 全局块中配置
+  - 配置允许生成的worker process数量
+    - `worker_process number | auto`
+      - number:制定Nginx进程最多可以产生的worker_process数量
+      - auto:Nginx将自动检测
+    - 全局块中配置
+  - 配置Nginx进程的PID存放路径
+    - `pid file`
+      - 结尾必须是文件名，如果是目录，那么将不能正确打开
+    - 全局块中配置
+  - 配置错误日志的存放路径
+    - `error_log file|stderr [debug | info | notice | warn | error | crit | alert | emerg]`
+      - file|stderr:指定错误日志的输入方式
+      - [...]:指定错误日志的输出级别
+    - 全局块、http块、server块、location块
+  - 引入配置文件
+    -  `include file`
+    - 任何地方
+  - 设置网络链接的序列化
+    - 惊群
+    - `accept_mutex on|off`
+    - 在events配置
+  - 设置是否允许同时接受多个网路连接
+    - `multi_accept on|off`
+    - 在events配置
+  - 事件驱动模型的选择
+    - `use method`
+      - method:事件驱动模型
+        - select
+        - poll
+        - kqueue
+        - epoll
+        - rtsig
+        - /dev/poll
+        - eventport
+    - 在events配置
+  - 配置最大连接数
+    - `worker_connections number`
+      - number:默认512,不能大于操作系统打开的最大文件句柄数
+    - 在events配置
+  - 定义MIME-Type
+    - types块
+    - `include mime.types`:引入第三方文件
+    - `default_type application/octeststream`:指定默认类型，制定顶默认是text/plain
+    - 配置在http块、server块、location块中
+  - 自定义服务日志
+    - `access_log path [format [buffer=zise]]`
+      - path:配置日志文件存放的路径和名称
+      - format:可选项，自定义服务日志的格式字符串，也可以通过格式串的名称来使用`log_format`指令定义好的格式
+      - `access_log off`:取消记录服务日志的功能
+      - size:配置临时存放日志的内存缓存区大小
+    - `log_format name string....`:确定日志字符串格式
+      - name:格式字符串的名字。默认是combined
+      - string:服务日志的格式字符串
+    - 只能在http块中配置
+  - 配置允许sendfile方式传输文件
+    - `sendfile on|off`:开启|关闭使用sendfile()方式传输文件，默认值是off关闭
+    - `sendfile_max_chunk size`:设置每次调用sendfile()传输数据量的最大值不能超过这个值，如果为0,则无限制
+      - eg:`sendfile_max_chunk 128k`
+    - 这两个指令可以在http块、server块、location块配置
+  - 配置链接超市时间
+    - `keepalive_timeout timeout [header_timeout]`
+      - timeout:服务器端对链接的保持时间，默认值是75s
+      - header_timeout:可选项，在应答报文头的Keep-Alive域设置超时时间“Keep-Alive:timeout=header_timeout”,该指令可以被Mozilla或者Konqueror识别
+      - 此指令可以在http块、server块、location块中
+  - 单链接请求数上限
+    - `keepalive_requests number`:单次链接允许发送请求的次数
+    - 此指令在server块和location块，默认值是100
+  - 配置网络监听
+    - 三种方式
+      - `listen address[:port] [default_server] [setfib=number] [backlog=number] [rcvbuf=size] [sndbuf=size] [deferred] [accept_filter=filter] [bind] [ssl]`
+      - `listen port [default_server] [setfib=number] [backlog=number] [rcvbuf=size] [sndbuf=size] [accept_filter=filter] [deferred] [bind] [ipv6only=on|off] [ssl]`
+      - `listen unix:path [default_server] [backlog=number] [rcvbuf=size] [sndbuf=size] [accept_filter=filter] [deferred] [bind] [ssl]`
+        - UNIX Domain Socket(一种原有Socket框架上发展起来的IPC机制，用于单个主机上执行客户/服务器通信)
+        - address:IP地址，如果是IPv6的地址，需要使用中括号"[]"括起来
+        - port:端口号，如果没有定义，默认使用80端口
+        - path,socket文件路径，如/var/run/nginx.sock等
+        - default_server,标识符，将此虚拟机设置为address:port的默认主机
+        - setfib=number,为监听socket关联路由表，目前只对FreeBSD起作用，不常有
+        - backlog=number:设置监听函数listen()最多允许多少网络连接同时处于挂起状态，在FreeBSD中默认为-1,其他平台默认是511
+        - rcvbuf=size:设置监听socket接受缓存区大小
+        - sndbuf=size:设置监听socket发送缓存区大小
+        - deferred:标识符，将accept()设置为Deferred模式
+        - accept_filter=filter,设置端口对请求的过滤被过滤的内容不能被接受和处理
+          - dataready
+          - httpready
+        - bind:标识符，使用独立的bind()处理此address:port
+        - ssl:标识符，设置此会话链接使用SSL模式进行
+  - 基于名称的虚拟主机配置
+    - `server_name name ...`
+  - 基于IP的虚拟主机配置
+  - 配置location块
+    - `location[ = | ~ | ~* | ^~ ] uri { ... }`
+  - 配置请求的根目录
+    - `root path`
+  - 更改location的URI
+    - `alias path`
+  - 设置网站的默认首页
+    - `index file ...`
+    - 两个作用
+      - 用户在发出请求访问网站时，请求地址可以不屑首页名称
+      - 对于提个请求，根据请求内容设置不同的首页
+  - 设置网站的错误页面
+    - `error_page code ... [=[response]] uri`
+      - code:要处理的HTTP错误代码
+      - response:可选项，将code制定的错误代码转化为新的错误代码response
+      - uri:错误页面的路径或者网站地址
+  - 基于IP配置Nginx的访问权限
+    - 两种途径控制权限
+      - 由http标准模块ngx_http_access_module支持
+      - 通过IP判断客户端是否拥有对Nginx的访问权限
+    - `allow address | CIDR | all`
+      - address:允许访问的客户端IP，不允许同时设置多个，多个需要重复使用allow指令
+      - CIDR：允许访问的客户端的CIDR地址
+      - all:允许所有客户端访问
+    - `deny address | CIDR | all`
+      - 功能正好和allow相反
+    - 可以设置在http、server、location块中
+  - 基于密码配置的Nginx的访问配置
+    - HTTP Basic Authentication协议
+    - `auth_basic string | off`
+      - string:开启认证功能，并配置验证的指示信息
+      - off:关闭认证功能
+    - `auth_basic_user_file file`
