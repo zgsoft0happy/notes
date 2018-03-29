@@ -1,0 +1,52 @@
+启动一个Java程序/应用。
+
+- 用法
+  - `java [options] classname [args]`
+  - `java [options] -jar filename [args]`
+  - `javaw [options] classname [args]`
+  - `javaw [options] -jar filename [args]`
+- 选项(options)
+  - 标准选项(Standard Options)
+    - -agentlib:libanme[=options]  加载指定的本地代理程序库
+    - -agentpath:pathname=[options]  加载指定路径下的本地代理程序库
+    - -client 选择Java HotSpot客户端虚拟机，但是64位的jdk 将直接使用的是服务器虚拟机
+    - -Dproperty=value:设置系统属性值，如果属性值是包含空格的字符串，则用双引号将属性值括起来
+    - -disableassertions[:[packagename]...[:classname]] / -da[:[packagename]...[:classname]]:设置禁用断言，默认所有的包和class禁用断言
+      - 可以不带参数，当不带参数时，代表所有的类禁用断言，除了系统的class
+      - -disablesystemassertions  / -dsa  设置系统class禁用断言
+    - -enableassertions[:[packagename]...[:classname]] / -ea[:[packagename]...[:classname]]:设置启用断言
+       - 类似da
+       - -enablesystemassertions / -esa
+    - -help / -?  现实java命令的帮助文档，而没有实际运行JVM
+    - -jar filename 运行一个封装在jar问价中的程序
+    - -javaagent:jarpath[=options]  设置指定的java程序语言代理
+    - -jre-restrict-search    设置在版本搜索中包含用户私有的JRE
+    - -no-jre-restrict-search    设置在版本搜索中不包含用户私有的JRE
+    - -server   选择java hotspot 的server 版的虚拟机
+    - -showversion  显示版本信息，并继续执行程序
+    - -splash:omagename  用指定的图片显示启动画面
+    - -verbose:class   显示每一个加载类的信息
+    - -verbose:gc      显示每一个垃圾回收事件
+    - -verbose:jni     显示有关使用native方法和其他有关JNI活动的信息
+    - -version   显示当前java的版本并退出，并没有启动JVM    
+    - -version:release   指定运行程序的java版本
+  - 非标准选项(Non-Standard Options)
+    - -X~~~   都是以-X开头的选项
+  - 高级运行时选项(Advanced Runtime Options)
+    - -XX~~~   都是以-XX开头的选项
+  - 高级即时编译器选项(Advanced JIT Compiler Options)
+  - 高级维修性选项(Advanced Serviceability Options)
+  - 高级垃圾回收选项(Advanced Garbage Collection Options)
+
+  注意，非标选项和高级选项可以参考[官网](https://docs.oracle.com/javase/8/docs/technotes/tools/windows/java.html#BABCBGHF)
+- classname
+  - 将要加载运行的java程序
+- filename
+  - 将要加载运行的jar文件
+- args
+  - 传递给main函数的args参数
+- 描述
+  - 启动JRE
+  - 加载指定的class
+  - 调用指定class的main方法
+    - 对于javafx应用的调用，要么是有main函数，要么是继承了javafx.application.Application,启动的时候，要么调用main,或者调用Application实例的init方法。
