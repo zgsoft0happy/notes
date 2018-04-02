@@ -1,0 +1,31 @@
+操作jar文件
+
+- 用法
+  - `jar c[efmMnv0] [entrypoint] [jarfile] [manifest] [-C dir] file ... [-Joption ...] [@arg-file ...]`   创建jar文件
+  - `jar u[efmMnv0] [entrypoint] [jarfile] [manifest] [-C dir] file ... [-Joption ...] [@arg-file ...]`   升级jar文件
+  - `jar x[vf] [jarfile] file ... [-Joption ...] [@arg-file ...]`   解压jar文件
+  - `jar t[vf] [jarfile] file ... [-Joption ...] [@arg-file ...]`   列出jar文件的内容
+  - `jar i jarfile [-Joption ...] [@arg-file ...]`   将索引添加到指定的jar文件中
+
+- 操作参数
+  - c
+  - u
+  - x
+  - t
+  - i
+- 选项
+  - -e  设置jar可执行，以及启动执行的类
+  - -f  设置jar问价的名称
+  - -m  指定manifest文件
+  - -M  取消/删除manifest文件
+  - -c  使得创建jar文件时不受pack200(1)命令的影响，如果不加这个参数不能进行签名/签名不可用
+  - -v  生成详细输出到标准输出。
+  - -0  创建或者更新jar文件不使用zip压缩
+  - -C dir 指定class文件所在目录
+  - -Joption   设置阴性jar文件时指定的JVM属性
+- 操作数/操作对象
+  - file   JAR文件名
+  - entrypoint   指定jar运行的入口点
+  - jarfile   定义要创建（c），更新（u），提取（x）或查看（t）的文件的名称。
+  - manifest    如果存在f选项，则必须指定清单操作数。
+  - @arg-file   指定文件列表，简化jar命令
