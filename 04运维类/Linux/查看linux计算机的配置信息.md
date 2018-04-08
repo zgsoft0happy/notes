@@ -1,0 +1,67 @@
+一般计算的主要配置是CPU、内存、硬盘等
+
+- CPU
+  - `lscpu`
+    - Architecture:   机器结构x86 或者x86_64
+    - CPU op-mode(s):   CPU运行模式，32bit/64bit
+    - Byte Order:   字节排序规则， Little endian小段字节
+    - CPU(s):   逻辑处理器核心的数量
+    - On-line CPU(S) list:cup的索引列表
+    - Thread(s) per core:每个核心的线程数量
+    - Core(s) per socket:每个cpu插槽核数/每颗物理cpu核数， 物理核心数量
+    - Socket(s):CPU插槽数量
+    - NUMA：每个Socket插槽的NUMA节点数量
+    - Vendor ID：厂商 ID
+    - CPU family : CPU系列
+    - Model：型号
+    - Stepping：步进
+    - CPU MHz：CPU的主频
+    - BogoMIPS：伪每秒百万条指令
+    - Virtualization：Cpu支持的虚拟化技术
+    - L1d cache: 一级数据缓存
+    - L1i cache: 一级指令缓存
+    - L2 cache:二级缓存
+    - L3 cache:三级缓存
+    - NUMA node0 CPU(s): NUMA节点0上的cpu列表
+  - `cat /proc/cpuinfo`
+    - processor: 处理器编号
+    - vendor_id： 厂商ID
+    - cpu family: CPU 系列
+    - model：型号
+    - model name:型号名称
+    - stepping:步进
+    - microcode：微代码
+    - CPU MHz:cpu主频
+    - cache size: 缓存大小
+    - physical id :物理核心的ID
+    - siblings:一个物理核心中逻辑核心个数
+    - core id:当前物理核在其所处CPU中的编号，这个编号不一定连续
+    - cpu cores:一个物理CPU中的物理核数
+    - apicid:用来区分不同逻辑核的编号，系统中每个逻辑核的此编号必然不同，此编号不一定连续
+    - initial apicid
+    - fpu
+    - fpu_exception
+    - cpuid level
+    - wp
+    - flags
+    - bugs  ：
+    - bogomips  伪每秒百万指令
+    - clflush size  : cache行的大小
+    - cache_alignment ：cache对齐字节
+    - address sizes ： 寻址能力，包括无力地址线数量和逻辑地址线数量
+    - power management：能量关系
+  - 物理CPU个数：        cat /proc/cpuinfo |grep "physical id"|sort |uniq|wc -l
+  - 每个CPU物理核数：    cat /proc/cpuinfo |grep "cpu cores"|uniq
+  - 每个CPU逻辑核数：    cat /proc/cpuinfo |grep "siblings"|uniq
+  - 总CPU逻辑核数：        cat /proc/cpuinfo |grep -c "processor"
+
+- 内存
+  - free
+    - -m：选项m是以m为单位显示大小
+  - dmidecode:查看内存插槽
+  - sudo dmidecode -t memory |grep "Maximum Capacity":查看最大支持内存
+  - sudo dmidecode|grep -A16 "Memory Device"|grep 'Speed'： 查看内存速率
+
+- 硬盘
+  - lsblk:列出块设备
+  - df : 查看硬盘使用情况
