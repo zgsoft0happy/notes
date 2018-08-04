@@ -1,0 +1,9 @@
+- 《深入理解java虚拟机：java高级特性与最佳实践》
+  - 《TheJava Virtual Machine Specification,Java SE 7 Edition》（《Java虚拟机规范》）
+    - http://docs.oracle.com/javase.specs/jvms/se7/jvms7.pdf
+    - http://icyfenix.iteye.com/blog/1256329
+  - 《The Java Language Specification,Java SE 7 Edition》
+    - http://docs.oracle.com/javase/specs/jls/se7/jls7.pdf
+  - 《Oracle JRockit The Definitive Guide》（《Oracle JRockit权威指南》）
+  - 《Inside the Java 2 Virtual Machine,Second Edition》（《深入Java虚拟机（第2版）》）
+  - 《Java Performance》
